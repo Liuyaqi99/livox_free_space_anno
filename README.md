@@ -1,5 +1,7 @@
 # Livox-Free-Space
-
+##
+This repository add some annotation in Chinese to Livox-Free-Space.
+这个库为Livox-Free-Space增添了中文注释，描述了大概原理，若有错误，欢迎指出。
 
 
 **Livox-Free-Space** is a fast and effective free-space detection package using [Livox](www.livoxtech.com) LiDAR data. It based on traditional algorithm to segment 3D LiDAR data and generate free-space.
