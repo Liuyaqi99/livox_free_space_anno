@@ -1,6 +1,8 @@
 # Livox-Free-Space
-##
+## Description
+
 This repository add some annotation in Chinese to Livox-Free-Space.
+
 这个库为Livox-Free-Space增添了中文注释，描述了大概原理，若有错误，欢迎指出。
 
 
