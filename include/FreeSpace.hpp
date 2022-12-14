@@ -20,7 +20,8 @@ using namespace std;
 
 #define SELF_CALI_FRAMES 20
 
-
+//地面栅格图是二维，xy平面；降采样体素图和去噪体素图是三维，xyz
+//地面栅格图大小（但用到的其实是下面带了后缀1的），具体N、D、OFF参照后面体素图说明
 #define GND_IMG_NX 150
 #define GND_IMG_NY 400
 #define GND_IMG_DX 0.2
@@ -35,19 +36,27 @@ using namespace std;
 #define GND_IMG_OFFX1 40
 #define GND_IMG_OFFY1 40
 
+//N 降采样体素图大小 
 #define DN_SAMPLE_IMG_NX 500
 #define DN_SAMPLE_IMG_NY 200
 #define DN_SAMPLE_IMG_NZ 100
+//D 每个降采样体素格代表的实际大小（单位：m）
 #define DN_SAMPLE_IMG_DX 0.4
 #define DN_SAMPLE_IMG_DY 0.4
 #define DN_SAMPLE_IMG_DZ 0.2
-#define DN_SAMPLE_IMG_OFFX 50 // -50～150
-#define DN_SAMPLE_IMG_OFFY 40 // -40～40
-#define DN_SAMPLE_IMG_OFFZ 10// -10～10
 
+// OFF 代表实际原点相对于投影后原点的各轴偏移量（单位：m）；
+// 原来的（-50,-40,-10）【最前右下点】变成了新的原点（0,0,0），原来的原点(0,0,0)变成了（50,40,10）
+#define DN_SAMPLE_IMG_OFFX 50 // 对应的x轴实际范围是-50m～150m
+#define DN_SAMPLE_IMG_OFFY 40 // 对应的y轴实际范围是-40m～40m
+#define DN_SAMPLE_IMG_OFFZ 10// 对应的z轴实际范围是-10m～10m
+
+//N 去噪体素图大小 
+//（计算方式：实际范围/体素格大小【如z轴 (10-(-10))/DENOISE_IMG_DZ = 100】）
 #define DENOISE_IMG_NX 200 
 #define DENOISE_IMG_NY 80 
 #define DENOISE_IMG_NZ 100
+//D 每个去噪体素格代表的实际大小（单位：m）
 #define DENOISE_IMG_DX 1 
 #define DENOISE_IMG_DY 1 
 #define DENOISE_IMG_DZ 0.2

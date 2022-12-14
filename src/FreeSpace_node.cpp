@@ -142,14 +142,14 @@ void GenerateFreeSpace(pcl::PointCloud<pcl::PointXYZI> & pc)
 
     float *data=(float*)calloc(dnum*4,sizeof(float));
     std::vector<float> free_space;
-    for (int p=0; p<dnum; ++p)
+    for (int p=0; p<dnum; ++p)//转为float数组
     {
         data[p*4+0] = pc.points[p].x;
         data[p*4+1] = pc.points[p].y;
         data[p*4+2] = pc.points[p].z;
         data[p*4+3] = pc.points[p].intensity;
     }       
-    livox_free_space.GenerateFreeSpace(data, dnum, free_space);
+    livox_free_space.GenerateFreeSpace(data, dnum, free_space);//处理生成可行驶区域，data为原始点，dnum为原始点数，free_space为以极坐标形式排列的可通行区域点
     t1 = clock();
 
     pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZRGB>);
@@ -158,13 +158,13 @@ void GenerateFreeSpace(pcl::PointCloud<pcl::PointXYZI> & pc)
     cloud->height = 1;
     cloud->is_dense = false;
     cloud->points.resize(cloud->width*cloud->height);
-    ApplyColorToPointCloud(*cloud, pc);
+    ApplyColorToPointCloud(*cloud, pc);//将原始点按照强度值赋以RGB着色
     sensor_msgs::PointCloud2 msg2;
     pcl::toROSMsg(*cloud, msg2);
     
     msg2.header.stamp = gheader.stamp;
     msg2.header.frame_id = "livox_frame";
-    fs_points_pub.publish(msg2);
+    fs_points_pub.publish(msg2);//发布原始点云
 
     pcl::PointCloud<pcl::PointXYZI> fs;
     fs.clear();
@@ -175,12 +175,12 @@ void GenerateFreeSpace(pcl::PointCloud<pcl::PointXYZI> & pc)
         p.intensity = free_space[i + 2];
         fs.points.push_back(p);
     }
-    sensor_msgs::PointCloud2 msg3;
+    sensor_msgs::PointCloud2 msg3;//发布可通行区域点云
     pcl::toROSMsg(fs, msg3);
     
     msg3.header.stamp = gheader.stamp;
     msg3.header.frame_id = "livox_frame";
-    fs_pub.publish(msg3);
+    fs_pub.publish(msg3);//发布可通行区域点云
     std::vector<float>().swap(free_space);
     t2 = clock();
 
@@ -222,6 +222,7 @@ int main(int argc, char **argv)
     while (status) 
     {
         ros::spinOnce();
+        //可视化，不重要
         if (!is_background_pub)
         {
             PrepareBackground();
@@ -230,14 +231,15 @@ int main(int argc, char **argv)
         fs_distance_circle_pub.publish(circles);
         fs_distance_text_pub.publish(texts);
         pcl::PointCloud<pcl::PointXYZI> pc;
-
+        
+        //收到原始点云的信息后
         if(recieved_pc_msg_flag)
         {
             pcl::fromROSMsg (*this_pc_msg, pc);
             for (int i = 0; i < pc.points.size(); i++)
-                pc.points[i].z = pc.points[i].z + height_offset;
+                pc.points[i].z = pc.points[i].z + height_offset; //加上点云高度偏置
             gheader = this_pc_msg->header;
-            GenerateFreeSpace(pc);
+            GenerateFreeSpace(pc); //处理生成可行驶区域
             recieved_pc_msg_flag = false;
         }
 
